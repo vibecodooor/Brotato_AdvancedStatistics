@@ -12,7 +12,6 @@ func _init():
 	ModLoaderMod.install_script_extension(EXT_PATH + "entities/units/enemies/enemy.gd")
 	ModLoaderMod.install_script_extension(EXT_PATH + "entities/units/neutral/neutral.gd")
 	ModLoaderMod.install_script_extension(EXT_PATH + "entities/units/player/player.gd")
-	ModLoaderMod.install_script_extension(EXT_PATH + "entities/structures/structure.gd")
 	ModLoaderMod.install_script_extension(EXT_PATH + "entities/structures/turret/turret.gd")
 	ModLoaderMod.install_script_extension(EXT_PATH + "singletons/item_service.gd")
 	ModLoaderMod.install_script_extension(EXT_PATH + "singletons/run_data.gd")
