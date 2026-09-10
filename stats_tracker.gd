@@ -699,7 +699,7 @@ func init_mod_state()->Dictionary:
 	}
 
 func _save_dir() -> String:
-	var base = "user://" + Platform.get_user_id() + "/mod_advstats"
+	var base = ProgressData.SAVE_DIR + "/mod_advstats"
 	return base if owner_index == 0 else base + "/player_"+str(owner_index+1)
 
 func on_weapon_index_removed(index: int):
