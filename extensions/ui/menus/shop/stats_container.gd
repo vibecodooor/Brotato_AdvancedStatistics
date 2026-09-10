@@ -20,7 +20,7 @@ func set_focus_neighbours()->void :
 		if focused_tab == Tab.PRIMARY:
 			if loop_focus_top:
 				if show_buttons:
-					advstats_toggle.focus_neighbour_top = _primary_tab.get_path_to(last_primary_stat)
+					advstats_toggle.focus_neighbour_top = advstats_toggle.get_path_to(last_primary_stat)
 
 			if loop_focus_bottom:
 				if show_buttons:

@@ -47,3 +47,9 @@ func mod_advstats_button_pressed():
 		mod_advstats_menu.hide()
 		mod_advstats_vbox.show()
 		mod_advstats_button.text = "+"
+
+func _set_player_index(p_player_index: int):
+	._set_player_index(p_player_index)
+	if is_instance_valid(mod_advstats_menu):
+		mod_advstats_menu.player_index = p_player_index
+		mod_advstats_menu.build_statistics()

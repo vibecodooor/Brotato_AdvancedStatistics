@@ -7,13 +7,13 @@ func save()->void:
 	
 	if not mod_advstats:
 		mod_advstats = get_tree().get_root().get_node("ModLoader/meinfesl-AdvancedStatistics/StatsTracker")
-	mod_advstats.save()
+	for tracker in RunData.advstats_all(): tracker.save()
 	
 func load_game_file(try_fallback: = true)->void:
 	.load_game_file(try_fallback)
 	
 	mod_advstats = get_tree().get_root().get_node("ModLoader/meinfesl-AdvancedStatistics/StatsTracker")
-	mod_advstats.load()
+	for tracker in RunData.advstats_all(): tracker.load()
 
 func save_run_state(
 		shop_items: = [], 
@@ -30,10 +30,10 @@ func save_run_state(
 		free_rerolls, 
 		item_steals)
 	
-	mod_advstats.save_run_state()
+	for tracker in RunData.advstats_all(): tracker.save_run_state()
 
 
 func reset_run_state()->void:
 	.reset_run_state()
 	
-	mod_advstats.reset_run_state()
+	for tracker in RunData.advstats_all(): tracker.reset_run_state()

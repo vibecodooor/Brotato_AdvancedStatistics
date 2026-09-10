@@ -1,0 +1,22 @@
+{
+  "name": "AdvancedStatisticsRegression",
+  "namespace": "Local",
+  "version_number": "1.0.0",
+  "description": "Opt-in isolated integration checks for AdvancedStatistics.",
+  "website_url": "",
+  "dependencies": [
+    "meinfesl-AdvancedStatistics"
+  ],
+  "extra": {
+    "godot": {
+      "authors": [],
+      "compatible_mod_loader_version": [
+        "6.3.0"
+      ],
+      "compatible_game_version": [
+        "1.1.15.4"
+      ],
+      "incompatibilities": []
+    }
+  }
+}

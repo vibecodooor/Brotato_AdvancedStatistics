@@ -6,6 +6,7 @@ onready var tracker = get_tree().get_root().get_node("ModLoader/meinfesl-Advance
 onready var stats = get_tree().get_root().get_node("ModLoader/meinfesl-AdvancedStatistics/StatsTracker").run_stats
 onready var other_color = Utils.SECONDARY_FONT_COLOR
 
+var player_index = 0
 var inventory_popup
 var standalone_popup
 var weapons_container
@@ -19,12 +20,14 @@ func build_statistics():
 
 
 func build_statistic_impl():
+	tracker = RunData.advstats_for(player_index)
+	stats = tracker.run_stats
 	var vbox = $ScrollContainer/MarginContainer/VBoxContainer
 	for child in vbox.get_children():
 		vbox.remove_child(child)
 		child.queue_free()
 	
-	RunData.tracked_item_effects[0][Keys.item_scared_sausage_hash] = RunData.mod_advstats.run_stats["DAMAGE_SAUSAGE"]
+	RunData.tracked_item_effects[player_index][Keys.item_scared_sausage_hash] = RunData.advstats_for(player_index).run_stats["DAMAGE_SAUSAGE"]
 	
 	build_damage_stats()
 	build_survivability_stats()
@@ -85,9 +88,9 @@ func build_damage_stats():
 	add_row("   Damage Done", "%d" % damage_done)
 	
 	var character_passive = 0
-	var char_name = RunData.get_player_character(0).my_id
+	var char_name = RunData.get_player_character(player_index).my_id
 	if tracker.tracked_items.get(char_name, "") == "DAMAGE_DONE":
-		character_passive = RunData.tracked_item_effects[0].get(Keys.generate_hash(char_name), 0)
+		character_passive = RunData.tracked_item_effects[player_index].get(Keys.generate_hash(char_name), 0)
 		if character_passive:
 			var character = null
 			for it in items_container.get_children():
@@ -100,7 +103,7 @@ func build_damage_stats():
 	
 	var previous_weapons = weapon_damage
 	
-	var weapons = RunData.get_player_weapons_ref(0)
+	var weapons = RunData.get_player_weapons_ref(player_index)
 	for i in weapons.size():
 		var weapon = weapons[i]
 		var damage = stats["DAMAGE_BY_WEAPON"][i]
@@ -143,7 +146,7 @@ func build_damage_stats():
 	
 	var items = 0
 	for key in tracked_items:
-		var dmg = RunData.tracked_item_effects[0].get(Keys.generate_hash(key), 0)
+		var dmg = RunData.tracked_item_effects[player_index].get(Keys.generate_hash(key), 0)
 		if dmg is Array:
 			tracked_items[key] += dmg[0]
 			items += dmg[0]
@@ -170,9 +173,9 @@ func build_damage_stats():
 	for key in tracked_structures:
 		# Builder turret
 		if key == "item_turret_flame":
-			if RunData.get_player_character(0).my_id == "character_builder" and RunData.get_player_item(Keys.item_turret_flame_hash, 0) == null:
+			if RunData.get_player_character(player_index).my_id == "character_builder" and RunData.get_player_item(Keys.item_turret_flame_hash, player_index) == null:
 				continue
-		var dmg = RunData.tracked_item_effects[0].get(Keys.generate_hash(key), 0)
+		var dmg = RunData.tracked_item_effects[player_index].get(Keys.generate_hash(key), 0)
 		if dmg is Array:
 			for d in dmg:
 				tracked_structures[key] += d
@@ -184,21 +187,21 @@ func build_damage_stats():
 	var builder_turret = null
 	var builder_turret_damage = stats["DAMAGE_BUILDER_TURRET"]
 	for turret_hash in Keys.item_builder_turret_n_hash:
-		builder_turret = RunData.get_player_item(turret_hash, 0)
+		builder_turret = RunData.get_player_item(turret_hash, player_index)
 		if builder_turret:
 			break
 	
 	
-	if builder_turret_damage and RunData.get_player_item(Keys.item_turret_flame_hash, 0) == null:
-		builder_turret_damage += RunData.tracked_item_effects[0][Keys.item_turret_flame_hash]
+	if builder_turret_damage and RunData.get_player_item(Keys.item_turret_flame_hash, player_index) == null:
+		builder_turret_damage += RunData.tracked_item_effects[player_index][Keys.item_turret_flame_hash]
 	structures += builder_turret_damage
 	
 	if structures:
 		add_row("      Structures", make_pct(structures, damage_done), other_color)
 		# Builder turret
 		for key in tracked_structures:
-			if RunData.get_player_character(0).my_id == "character_builder" and key == "item_turret_flame":
-				if RunData.get_player_item(Keys.item_turret_flame_hash, 0) == null:
+			if RunData.get_player_character(player_index).my_id == "character_builder" and key == "item_turret_flame":
+				if RunData.get_player_item(Keys.item_turret_flame_hash, player_index) == null:
 					continue
 			
 			var dmg = tracked_structures[key]
@@ -266,7 +269,7 @@ func build_survivability_stats():
 		
 	var items = 0
 	for key in tracked_items:
-		var heal = RunData.tracked_item_effects[0].get(Keys.generate_hash(key), 0)
+		var heal = RunData.tracked_item_effects[player_index].get(Keys.generate_hash(key), 0)
 		if heal is Array:
 			tracked_items[key] += heal[0]
 			items += heal[0]
@@ -315,19 +318,19 @@ func build_econ_stats():
 	
 	var mat_all = stats["MATERIALS_GAINED"]
 	var mat_picked_up = stats["MATERIALS_GAINED_PICKED_UP"]
-	var mat_metal_detector = RunData.tracked_item_effects[0].get("item_metal_detector", 0)
+	var mat_metal_detector = RunData.tracked_item_effects[player_index].get("item_metal_detector", 0)
 	var mat_harvesting = stats["MATERIALS_GAINED_HARVESTING"]
 	var mat_recycling = stats["MATERIALS_GAINED_RECYCLING"]
-	var mat_recycling_machine = RunData.tracked_item_effects[0].get("item_recycling_machine", 0)
+	var mat_recycling_machine = RunData.tracked_item_effects[player_index].get("item_recycling_machine", 0)
 	var mat_crit = stats["MATERIALS_GAINED_WEAPON_CRIT"]
 
 	# it's already included in picked up
-	var lootworm = RunData.tracked_item_effects[0].get(Keys.generate_hash("item_lootworm"), 0)
+	var lootworm = RunData.tracked_item_effects[player_index].get(Keys.generate_hash("item_lootworm"), 0)
 	mat_picked_up -= lootworm
 	
 	var items = 0
 	for key in tracked_items:
-		var materials = RunData.tracked_item_effects[0].get(Keys.generate_hash(key), 0)
+		var materials = RunData.tracked_item_effects[player_index].get(Keys.generate_hash(key), 0)
 		if materials is Array:
 			for m in materials:
 				tracked_items[key] += m
@@ -369,7 +372,7 @@ func build_econ_stats():
 	if spent_other:
 		add_row("      Other Sources", make_pct(spent_other, spent_all), other_color)
 	
-	if RunData.get_player_character(0).my_id == "character_builder":
+	if RunData.get_player_character(player_index).my_id == "character_builder":
 		add_row("   Materials consumed by Builder's turret", "%d" % stats["MATERIALS_CONVERTED"])
 	
 	add_row("   Shop Items Browsed", "%d" % stats["SHOP_ITEMS_BROWSED"])
@@ -401,6 +404,7 @@ func add_row_item(padding:int, id:String, value:int, total:int, color = null):
 
 func add_row(name:String, value:String, color = null, element = null):
 	var row = row_proto.duplicate()
+	row.player_index = player_index
 	var hbox = row.get_node("MarginContainer/HBoxContainer")
 	hbox.get_node("Name").text = name
 	hbox.get_node("Value").text = value
@@ -426,7 +430,7 @@ func make_item_name(padding:int, id:String)->String:
 	for i in padding:
 		string += "   "
 	string += tr(id.to_upper())
-	var nb = RunData.get_nb_item(Keys.generate_hash(id), 0)
+	var nb = RunData.get_nb_item(Keys.generate_hash(id), player_index)
 	if nb > 1:
 		string += " (x%d)" % nb
 	return string
